@@ -1,28 +1,44 @@
 "use client";
 
-import { ArrowDown, ArrowRight, Brain, Radio, Zap } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  BarChart3,
+  Brain,
+  Cpu,
+  Radio,
+} from "lucide-react";
 
 import { FadeInView } from "@/components/landing/fade-in-view";
 
 const steps = [
   {
     n: "01",
-    title: "Observe",
-    description: "Traffic sensors collect real-time data on queues, speeds, and arrivals.",
+    title: "Data Acquisition",
+    description:
+      "IoT-enabled sensors (ultrasonic, CCTV, radar) capture raw traffic data at road intersections and transmit it to edge processing units.",
     icon: Radio,
   },
   {
     n: "02",
-    title: "Decide",
+    title: "Pre-processing",
     description:
-      "The DRL agent analyzes the state and chooses the optimal signal action.",
-    icon: Brain,
+      "Edge nodes filter noise, normalize data, and construct state vectors (vehicle counts, queue lengths, waiting times, emergency flags) for the DRL model.",
+    icon: Cpu,
   },
   {
     n: "03",
-    title: "Act",
-    description: "Signal timings are adjusted dynamically to improve traffic flow.",
-    icon: Zap,
+    title: "Intelligent Control",
+    description:
+      "The Deep Q-Network agent observes the state, selects the optimal signal phase action, and updates its policy using temporal difference learning.",
+    icon: Brain,
+  },
+  {
+    n: "04",
+    title: "Evaluation",
+    description:
+      "Performance is measured against traffic engineering metrics — average delay, throughput, CO₂ emissions, and emergency vehicle priority time.",
+    icon: BarChart3,
   },
 ] as const;
 
@@ -32,11 +48,12 @@ export function HowItWorks() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <FadeInView className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            How It Works
+            System Architecture
           </h2>
           <p className="mt-3 text-pretty text-muted-foreground sm:text-lg">
-            A closed-loop pipeline from sensing to action — optimized with deep
-            reinforcement learning.
+            A four-layer architecture from data acquisition to performance
+            evaluation — optimized with deep reinforcement learning and edge
+            computing.
           </p>
         </FadeInView>
 

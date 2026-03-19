@@ -4,13 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { FadeInView } from "@/components/landing/fade-in-view";
 
 const stack = [
-  { name: "Next.js", blurb: "Web dashboard & UI" },
-  { name: "NestJS", blurb: "APIs & services" },
-  { name: "TypeScript", blurb: "Type-safe codebase" },
+  { name: "SUMO", blurb: "Traffic simulation" },
+  { name: "TensorFlow / Keras", blurb: "DQN model training" },
+  { name: "YOLOv8", blurb: "Vehicle detection" },
+  { name: "Python", blurb: "RL & data pipeline" },
+  { name: "Raspberry Pi 4", blurb: "Edge inference nodes" },
+  { name: "Next.js / React", blurb: "Dashboard UI" },
+  { name: "NestJS", blurb: "Backend APIs" },
+  { name: "Socket.IO", blurb: "Real-time comms" },
+  { name: "Google Maps", blurb: "Geographic visualization" },
   { name: "PostgreSQL", blurb: "Persistent data" },
-  { name: "Socket.IO", blurb: "Realtime updates" },
-  { name: "TailwindCSS", blurb: "Rapid styling" },
-  { name: "Deep Q-Learning", blurb: "DRL optimization" },
+  { name: "AWS", blurb: "Cloud deployment" },
+  { name: "Deep Q-Network", blurb: "RL optimization" },
 ] as const;
 
 export function TechStackSection() {

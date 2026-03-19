@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, Cpu, Layers, Target } from "lucide-react";
+import { BookOpen, Cpu, Layers, Mail, Target } from "lucide-react";
 
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
@@ -20,10 +20,29 @@ export const metadata: Metadata = {
 };
 
 const objectives = [
-  "Learn adaptive policies that reduce average delay and queue lengths.",
-  "Improve corridor throughput and travel-time reliability versus fixed plans.",
-  "Enable safe simulation-to-reality transfer with measurable KPIs.",
-  "Support multi-intersection coordination under stochastic demand.",
+  "Develop an ITMS model using deep reinforcement learning to optimize urban traffic flow.",
+  "Evaluate the system's performance in reducing congestion and waiting time, while improving road safety under dynamic traffic conditions.",
+] as const;
+
+const researchers = [
+  {
+    name: "M.I. Folayan",
+    role: "Lead Researcher",
+    email: "michaelfolayan@outlook.com",
+    superscript: "1*",
+  },
+  {
+    name: "S.A. Oluwadare",
+    role: "Supervisor",
+    email: "saoluwadare@futa.edu.ng",
+    superscript: "2",
+  },
+  {
+    name: "I.P. Adegun",
+    role: "Co-Supervisor",
+    email: "ipadegun@futa.edu.ng",
+    superscript: "3",
+  },
 ] as const;
 
 export default function AboutPage() {
@@ -43,16 +62,22 @@ export default function AboutPage() {
           </div>
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
             <FadeInView>
-              <p className="text-sm font-medium text-primary">FUTA · ITMS Research</p>
-              <h1 className="mt-3 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                The Development of an Intelligent Traffic Management System using
-                Deep Reinforcement Learning to Optimize Urban Traffic Flow
+              <p className="text-sm font-medium text-primary">
+                FUTA · Department of Computer Science
+              </p>
+              <h1 className="mt-3 text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                Towards the Development of a Framework for Intelligent Traffic
+                Management Using Deep Reinforcement Learning and Edge Computing
               </h1>
               <p className="mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground sm:text-lg">
-                This project investigates how deep reinforcement learning can
-                replace rigid signal schedules with policies that adapt to
-                congestion, incidents, and varying demand — evaluated through
-                simulation and operational metrics.
+                This study proposes an Intelligent Traffic Management System
+                (ITMS) that integrates Deep Reinforcement Learning (DRL) with
+                real-time IoT sensing. It employs a Deep Q-Network (DQN) to
+                optimize signal timings based on real-time vehicle counts, queue
+                lengths, and emergency vehicle detection. Simulation results in
+                SUMO demonstrate a 37.7% reduction in average vehicle delay and
+                an 80.8% reduction in emergency wait times compared to static
+                systems.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
                 <Link
@@ -81,18 +106,21 @@ export default function AboutPage() {
                 </span>
                 <div>
                   <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                    Research methodology
+                    Research Methodology
                   </h2>
                   <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
-                    We formulate traffic signal control as a Markov Decision
-                    Process where the agent observes congestion-related state
-                    features (e.g., queue lengths, waits, arrivals) and selects
-                    discrete actions such as phase switches or extensions. A Deep
-                    Q-Network (DQN) approximates action values, trained with
-                    experience replay and target networks for stability. Policies
-                    are trained in a high-fidelity simulation environment and
-                    compared against fixed-time and rule-based baselines using
-                    delay, throughput, and environmental proxies.
+                    This research adopts a design-oriented and experimental
+                    methodology. The ITMS operates by continuously sensing
+                    traffic conditions, modeling the environment as a Markov
+                    Decision Process (MDP), learning optimal traffic signal
+                    control policies using a Deep Q-Network (DQN), and
+                    evaluating performance against conventional traffic control
+                    methods. The DQN agent learns through experience replay and
+                    target networks for stability, with a learning rate of 0.001
+                    and discount factor of 0.95. Training was conducted in two
+                    phases: base training using synthetic SUMO data, followed by
+                    fine-tuning with real-world data from five critical junctions
+                    in Akure, Nigeria.
                   </p>
                 </div>
               </div>
@@ -105,40 +133,41 @@ export default function AboutPage() {
                 </span>
                 <div>
                   <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                    System architecture
+                    System Architecture
                   </h2>
                   <p className="mt-3 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
-                    The platform follows a modular architecture: a{" "}
+                    The ITMS architecture consists of four main layers: a{" "}
                     <strong className="font-medium text-foreground">
-                      simulation / control layer
+                      Data Acquisition Layer
                     </strong>{" "}
-                    exposes state transitions and rewards; a{" "}
+                    capturing raw data from IoT sensors and CCTV cameras; a{" "}
                     <strong className="font-medium text-foreground">
-                      training service
+                      Pre-processing and State Representation Layer
                     </strong>{" "}
-                    runs DRL experiments and stores checkpoints; an{" "}
+                    for filtering, normalization, and state vector construction
+                    at edge nodes; an{" "}
                     <strong className="font-medium text-foreground">
-                      application backend
+                      Intelligent Control Layer
                     </strong>{" "}
-                    serves REST APIs and realtime channels; and a{" "}
+                    implementing the DQN model with multi-agent coordination;
+                    and an{" "}
                     <strong className="font-medium text-foreground">
-                      web dashboard
+                      Evaluation and Performance Analysis Layer
                     </strong>{" "}
-                    visualizes live metrics, intersection status, and evaluation
-                    summaries. Persistent configuration and run metadata reside
-                    in a relational database to support reproducibility.
+                    providing monitoring, analytics, and visualization through
+                    the cloud-based dashboard.
                   </p>
                   <pre className="mt-6 overflow-x-auto rounded-xl border border-border/60 bg-muted/30 p-4 text-left text-xs leading-relaxed text-muted-foreground shadow-inner sm:text-sm">
-{`┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│   Sensors /  │───▶│  State &     │───▶│  DRL Agent   │
-│  Simulation  │    │  Reward      │    │  (DQN)       │
-└──────────────┘    └──────────────┘    └──────┬───────┘
-                                               │
-                                               ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  Dashboard   │◀───│  API +       │◀───│  Signal      │
-│  (Next.js)   │    │  Realtime    │    │  Controller  │
-└──────────────┘    └──────────────┘    └──────────────┘`}
+{`┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│  Data Acquisition│───▶│  Pre-processing  │───▶│  DRL Agent       │
+│  (IoT Sensors)   │    │  (Edge Nodes)    │    │  (DQN)           │
+└──────────────────┘    └──────────────────┘    └────────┬─────────┘
+                                                         │
+                                                         ▼
+┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│  Dashboard       │◀───│  API + Realtime  │◀───│  Signal          │
+│  (React/Maps)    │    │  (NestJS/WS)     │    │  Controller      │
+└──────────────────┘    └──────────────────┘    └──────────────────┘`}
                   </pre>
                 </div>
               </div>
@@ -151,9 +180,14 @@ export default function AboutPage() {
                 </span>
                 <div className="w-full">
                   <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                    Research objectives
+                    Research Objectives
                   </h2>
-                  <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <p className="mt-3 max-w-3xl text-muted-foreground">
+                    The aim of this research is to develop an Intelligent Traffic
+                    Management System model using deep learning to address the
+                    challenges of urban congestion and road safety.
+                  </p>
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-1">
                     {objectives.map((obj) => (
                       <li
                         key={obj}
@@ -181,27 +215,34 @@ export default function AboutPage() {
                     Researchers
                   </h2>
                   <p className="mt-3 max-w-3xl text-muted-foreground">
-                    Team details will be published here (names, roles, and
-                    contact). This section is a placeholder during the research
-                    phase.
+                    Department of Computer Science, School of Computing — Federal
+                    University of Technology, Akure, Nigeria.
                   </p>
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {[1, 2].map((i) => (
+                  <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                    {researchers.map((r) => (
                       <Card
-                        key={i}
-                        className="border-dashed border-border/80 bg-muted/10"
+                        key={r.name}
+                        className="border-border/80 bg-card/80"
                       >
                         <CardHeader>
                           <CardTitle className="text-base">
-                            Researcher {i}
+                            {r.name}
+                            <sup className="ml-0.5 text-xs text-muted-foreground">
+                              {r.superscript}
+                            </sup>
                           </CardTitle>
-                          <CardDescription>
-                            Role, department, and email — coming soon.
+                          <CardDescription className="font-medium text-primary/80">
+                            {r.role}
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="text-sm text-muted-foreground">
-                          Affiliation: Federal University of Technology, Akure
-                          (FUTA)
+                        <CardContent className="space-y-1 text-sm text-muted-foreground">
+                          <a
+                            href={`mailto:${r.email}`}
+                            className="inline-flex items-center gap-1.5 text-primary transition-colors hover:text-primary/80"
+                          >
+                            <Mail className="h-3.5 w-3.5" />
+                            {r.email}
+                          </a>
                         </CardContent>
                       </Card>
                     ))}

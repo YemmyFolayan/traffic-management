@@ -4,8 +4,9 @@ import {
   Activity,
   BarChart3,
   Brain,
-  GitBranch,
+  Cpu,
   Radar,
+  ShieldAlert,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -19,34 +20,40 @@ import { FadeInView } from "@/components/landing/fade-in-view";
 
 const features = [
   {
-    title: "Deep Reinforcement Learning",
-    description: "AI-powered signal optimization using Q-learning.",
+    title: "Deep Q-Network (DQN)",
+    description:
+      "Reinforcement learning agent that continuously learns optimal signal control policies by interacting with the traffic environment via experience replay and target networks.",
     icon: Brain,
   },
   {
-    title: "Real-time Monitoring",
-    description: "Live traffic flow visualization and metrics.",
+    title: "IoT Sensor Network",
+    description:
+      "HC-SR04 ultrasonic sensors and Raspberry Pi Camera Modules deployed at intersections for real-time vehicle detection, queue estimation, and YOLOv8-based classification.",
+    icon: Radar,
+  },
+  {
+    title: "Edge Computing",
+    description:
+      "Raspberry Pi 4 edge nodes perform local DQN inference and state vector construction for low-latency signal control, with UPS backup for power resilience.",
+    icon: Cpu,
+  },
+  {
+    title: "Emergency Vehicle Priority",
+    description:
+      "Binary emergency flag in the state representation enables the DRL agent to dynamically grant immediate right-of-way, achieving 80.8% reduction in emergency wait times.",
+    icon: ShieldAlert,
+  },
+  {
+    title: "Real-time Dashboard",
+    description:
+      "Cloud-based monitoring interface built with React and Google Maps, using Socket.IO for bidirectional real-time updates on vehicle counts, queue lengths, and signal states.",
     icon: Activity,
   },
   {
-    title: "Adaptive Signal Control",
-    description: "Dynamic signal timing based on traffic conditions.",
+    title: "SUMO Simulation",
+    description:
+      "Realistic traffic environments modeled using SUMO with OpenStreetMap data and TraCI interface, validated across 30 independent runs with stochastic traffic seeds.",
     icon: SlidersHorizontal,
-  },
-  {
-    title: "Performance Analytics",
-    description: "Comprehensive traffic analysis and reporting.",
-    icon: BarChart3,
-  },
-  {
-    title: "Multi-Intersection Management",
-    description: "Coordinated control across intersections.",
-    icon: GitBranch,
-  },
-  {
-    title: "Simulation Environment",
-    description: "Test scenarios before deployment.",
-    icon: Radar,
   },
 ] as const;
 

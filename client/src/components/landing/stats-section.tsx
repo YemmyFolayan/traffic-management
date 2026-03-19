@@ -7,37 +7,46 @@ import { FadeInView } from "@/components/landing/fade-in-view";
 import { cn } from "@/lib/utils";
 
 const stats = [
-  { value: 35, suffix: "%", label: "Reduction in Wait Time" },
-  { value: 45, suffix: "%", label: "Improvement in Throughput" },
-  { value: 42, suffix: "%", label: "Increase in Average Speed" },
-  { value: 28, suffix: "%", label: "Lower Carbon Emissions" },
+  { value: 37.7, suffix: "%", label: "Reduction in Avg. Delay" },
+  { value: 30.1, suffix: "%", label: "Improvement in Throughput" },
+  { value: 16.8, suffix: "%", label: "Lower CO₂ Emissions" },
+  { value: 80.8, suffix: "%", label: "Reduction in Emergency Wait" },
 ] as const;
 
 const comparisons = [
   {
-    metric: "Avg. wait time (normalized)",
+    metric: "Avg. Delay (s)",
+    fixedLabel: "Static: 125.6s",
+    drlLabel: "ITMS: 78.3s",
     fixed: 100,
-    drl: 65,
+    drl: 62,
   },
   {
-    metric: "Throughput (veh/hr/lane)",
-    fixed: 69,
+    metric: "Throughput (veh/h)",
+    fixedLabel: "Static: 452",
+    drlLabel: "ITMS: 588",
+    fixed: 77,
     drl: 100,
   },
   {
-    metric: "Avg. speed (normalized)",
-    fixed: 71,
-    drl: 100,
+    metric: "CO₂ Emissions (kg/h)",
+    fixedLabel: "Static: 210.5",
+    drlLabel: "ITMS: 175.2",
+    fixed: 100,
+    drl: 83,
   },
   {
-    metric: "CO₂ estimate (normalized)",
+    metric: "Emergency Wait (s)",
+    fixedLabel: "Static: 45.2s",
+    drlLabel: "ITMS: 8.7s",
     fixed: 100,
-    drl: 72,
+    drl: 19,
   },
 ] as const;
 
 function useCountUp(target: number, enabled: boolean, durationMs = 1400) {
   const [n, setN] = useState(0);
+  const hasDecimal = target % 1 !== 0;
 
   useEffect(() => {
     if (!enabled) return;
@@ -47,13 +56,14 @@ function useCountUp(target: number, enabled: boolean, durationMs = 1400) {
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / durationMs);
       const eased = 1 - (1 - t) ** 3;
-      setN(Math.round(target * eased));
+      const raw = target * eased;
+      setN(hasDecimal ? Math.round(raw * 10) / 10 : Math.round(raw));
       if (t < 1) raf = requestAnimationFrame(tick);
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [enabled, target, durationMs]);
+  }, [enabled, target, durationMs, hasDecimal]);
 
   return n;
 }
@@ -112,8 +122,8 @@ export function StatsSection() {
             Research Results
           </h2>
           <p className="mt-3 text-pretty text-muted-foreground sm:text-lg">
-            Representative improvements from DRL-optimized control versus
-            fixed-time baselines in our evaluation scenarios.
+            Average results from 30 independent SUMO simulation runs (3600s
+            each) comparing the ITMS against a validated static timing baseline.
           </p>
         </FadeInView>
 
@@ -133,11 +143,11 @@ export function StatsSection() {
         <FadeInView className="mt-14">
           <div className="rounded-xl border border-border/60 bg-card/70 p-6 shadow-sm backdrop-blur-sm sm:p-8">
             <h3 className="text-lg font-semibold tracking-tight">
-              Fixed-Time vs DRL-Optimized
+              Static System vs ITMS (DQN-Optimized)
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Bars show relative performance (higher is better except wait time
-              & emissions where lower is better).
+              Bars show relative performance. Lower is better for delay,
+              emissions, and emergency wait. Higher is better for throughput.
             </p>
             <div className="mt-8 space-y-6">
               {comparisons.map((row) => (
@@ -147,13 +157,13 @@ export function StatsSection() {
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <BarCompare
-                      label="Fixed-Time"
+                      label={row.fixedLabel}
                       value={row.fixed}
                       tone="muted"
                       animate={visible}
                     />
                     <BarCompare
-                      label="DRL-Optimized"
+                      label={row.drlLabel}
                       value={row.drl}
                       tone="primary"
                       animate={visible}

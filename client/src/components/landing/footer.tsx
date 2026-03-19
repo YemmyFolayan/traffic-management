@@ -5,7 +5,9 @@ const footerLinks = [
   { href: "/", label: "Home" },
   { href: "/#about", label: "About" },
   { href: "/#features", label: "Features" },
+  { href: "/#methodology", label: "Methodology" },
   { href: "/#results", label: "Results" },
+  { href: "/#researchers", label: "Researchers" },
   { href: "/about", label: "Research" },
 ] as const;
 
@@ -26,11 +28,14 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Intelligent Traffic Management System — research on deep
-              reinforcement learning for urban traffic signal optimization.
+              Towards the Development of a Framework for Intelligent Traffic
+              Management Using Deep Reinforcement Learning and Edge Computing.
             </p>
             <p className="mt-4 text-sm font-medium text-foreground">
-              Federal University of Technology, Akure (FUTA)
+              Department of Computer Science, School of Computing
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Federal University of Technology, Akure (FUTA), Nigeria
             </p>
           </div>
 

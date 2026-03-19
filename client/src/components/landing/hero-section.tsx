@@ -25,26 +25,53 @@ export function HeroSection() {
       <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8">
         <div>
           <p className="mb-3 inline-flex items-center rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-sm">
-            FUTA Research · Deep Reinforcement Learning
+            FUTA Research · Department of Computer Science
           </p>
-          <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Intelligent Traffic Management System
+          <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            Towards the Development of a Framework for Intelligent Traffic
+            Management Using Deep Reinforcement Learning and Edge Computing
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground sm:text-xl">
-            Optimizing urban traffic flow with deep reinforcement learning —
-            adaptive signal control that learns from real-world congestion
-            patterns.
-          </p>
           <div
             id="about"
             className="mt-6 scroll-mt-28 space-y-4 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base"
           >
             <p>
-              This research develops an Intelligent Traffic Management System
-              (ITMS) that applies Deep Q-Learning and simulation-based training
-              to reduce delays, improve throughput, and lower emissions across
-              urban intersections.
+              Urban traffic congestion leads to excessive delays and
+              environmental carbon pollution. Traditional fixed-time signal
+              controls lack the adaptability required for stochastic traffic
+              variations. This study proposes an Intelligent Traffic Management
+              System (ITMS) that integrates Deep Reinforcement Learning (DRL)
+              with real-time IoT sensing. It employs a Deep Q-Network (DQN) to
+              optimize signal timings based on real-time vehicle counts, queue
+              lengths, and emergency vehicle detection.
             </p>
+            <p>
+              Simulation results in SUMO demonstrate that the ITMS achieves a{" "}
+              <strong className="font-semibold text-foreground">
+                37.7% reduction in average vehicle delay
+              </strong>{" "}
+              and an{" "}
+              <strong className="font-semibold text-foreground">
+                80.8% reduction in emergency wait times
+              </strong>{" "}
+              compared to static systems.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {[
+                "Intelligent Traffic Management",
+                "Deep Reinforcement Learning",
+                "IoT",
+                "Edge Computing",
+                "SUMO",
+              ].map((kw) => (
+                <span
+                  key={kw}
+                  className="rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground"
+                >
+                  {kw}
+                </span>
+              ))}
+            </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button size="lg" className="gap-2" asChild>
@@ -54,7 +81,7 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href="#features">Learn More</a>
+              <a href="#methodology">Learn More</a>
             </Button>
           </div>
         </div>
