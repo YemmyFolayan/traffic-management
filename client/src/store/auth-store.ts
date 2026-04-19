@@ -2,8 +2,10 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
+import { isDemoMode } from "@/lib/demo-mode";
 import { DEMO_ADMIN, DEMO_USERS } from "@/lib/demo-data";
 import type { RegisterPayload, User } from "@/types";
+import { UserRole } from "@/types";
 
 interface AuthState {
   user: User | null;
@@ -90,6 +92,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isDemoSession: false,
       });
     } catch (e) {
+      if (isDemoMode()) {
+        const demoUser: User = {
+          id: `demo-${Date.now()}`,
+          email: payload.email,
+          name: payload.name,
+          role: payload.role ?? UserRole.VIEWER,
+          createdAt: new Date().toISOString(),
+        };
+        if (typeof window !== "undefined") {
+          localStorage.setItem("itms_demo_email", payload.email);
+        }
+        api.setTokens({ accessToken: "demo-token", refreshToken: "demo-refresh" });
+        set({
+          user: demoUser,
+          isAuthenticated: true,
+          isLoading: false,
+          isDemoSession: true,
+        });
+        return;
+      }
       set({ isLoading: false });
       throw e;
     }
@@ -141,6 +163,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   updateProfile: async (data) => {
     const current = get().user;
     if (!current) return;
+
+    if (get().isDemoSession || isDemoMode()) {
+      set({ user: { ...current, ...data }, isLoading: false });
+      return;
+    }
+
     set({ isLoading: true });
     try {
       const res = await api.put<User>("/auth/me", data);

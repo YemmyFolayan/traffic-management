@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { io, type Socket } from "socket.io-client";
 import type { SimulationConfig, SimulationState } from "@/types";
+import { isDemoMode } from "@/lib/demo-mode";
 
 const WS_URL =
   process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001";
@@ -35,6 +36,7 @@ export const useSimulationStore = create<SimulationStoreState>((set, get) => ({
   config: { ...defaultConfig },
 
   connect: () => {
+    if (isDemoMode()) return;
     if (socket?.connected) return;
 
     const s = io(WS_URL, {

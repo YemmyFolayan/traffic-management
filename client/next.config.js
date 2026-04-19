@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: process.env.NETLIFY ? undefined : "standalone",
 };
 
 module.exports = nextConfig;

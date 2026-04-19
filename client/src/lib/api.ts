@@ -13,6 +13,7 @@ import type {
   User,
   UserRole,
 } from "@/types";
+import { isDemoMode } from "@/lib/demo-mode";
 
 const ACCESS_TOKEN_KEY = "itms_access_token";
 const REFRESH_TOKEN_KEY = "itms_refresh_token";
@@ -140,6 +141,10 @@ class ApiClient {
       query?: Record<string, string | number | boolean | undefined>;
     },
   ): Promise<ApiResponse<T>> {
+    if (isDemoMode()) {
+      return { entity: null as T, error: null, status: false };
+    }
+
     const queryString = this.buildQueryString(options?.query);
     const url = `${this.baseUrl}/${path.replace(/^\//, "")}${queryString}`;
 

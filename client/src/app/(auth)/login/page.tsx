@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthStore } from "@/store/auth-store";
+import { isDemoMode } from "@/lib/demo-mode";
 import { toast } from "@/hooks/use-toast";
 import {
   Activity,
@@ -24,6 +25,9 @@ import {
   Loader2,
   Lock,
   Mail,
+  Shield,
+  Settings,
+  BarChart3,
 } from "lucide-react";
 
 function getErrorMessage(err: unknown, fallback: string): string {
@@ -178,6 +182,98 @@ export default function LoginPage() {
           </CardFooter>
         </form>
       </Card>
+
+      {isDemoMode() && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Quick access
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              {
+                label: "Admin",
+                desc: "Full access",
+                email: "admin@itms.com",
+                pw: "admin123",
+                icon: Shield,
+                gradient: "from-rose-500 to-orange-500",
+                shadow: "shadow-rose-500/20",
+                ring: "ring-rose-200",
+                bg: "bg-rose-50",
+                text: "text-rose-700",
+              },
+              {
+                label: "Operator",
+                desc: "Manage traffic",
+                email: "operator@itms.com",
+                pw: "operator123",
+                icon: Settings,
+                gradient: "from-blue-500 to-cyan-500",
+                shadow: "shadow-blue-500/20",
+                ring: "ring-blue-200",
+                bg: "bg-blue-50",
+                text: "text-blue-700",
+              },
+              {
+                label: "Viewer",
+                desc: "Read-only",
+                email: "viewer@itms.com",
+                pw: "viewer123",
+                icon: BarChart3,
+                gradient: "from-emerald-500 to-teal-500",
+                shadow: "shadow-emerald-500/20",
+                ring: "ring-emerald-200",
+                bg: "bg-emerald-50",
+                text: "text-emerald-700",
+              },
+            ].map((d) => {
+              const Icon = d.icon;
+              const isActive = email === d.email;
+              return (
+                <button
+                  key={d.email}
+                  type="button"
+                  onClick={() => {
+                    setEmail(d.email);
+                    setPassword(d.pw);
+                  }}
+                  className={`group relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${d.shadow} ${
+                    isActive
+                      ? `border-transparent ring-2 ${d.ring} ${d.bg}`
+                      : "border-slate-200/80 bg-white/80 hover:border-slate-300"
+                  }`}
+                >
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${d.gradient} shadow-md ${d.shadow} transition-transform duration-200 group-hover:scale-110`}
+                  >
+                    <Icon className="h-5 w-5 text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold ${isActive ? d.text : "text-slate-800"}`}>
+                      {d.label}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {d.desc}
+                    </p>
+                  </div>
+                  {isActive && (
+                    <div className={`absolute -top-1 -right-1 h-3 w-3 rounded-full bg-gradient-to-br ${d.gradient} ring-2 ring-white`} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-[11px] text-muted-foreground/70">
+            Tap a role above to auto-fill credentials, then sign in.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
