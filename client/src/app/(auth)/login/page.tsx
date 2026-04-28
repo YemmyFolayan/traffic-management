@@ -48,8 +48,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      toast({ title: "Signed in", description: "Welcome back to ITMS." });
-      router.push("/dashboard");
+      toast({ title: "Credentials verified", description: "Please complete passphrase verification." });
+      router.push("/verify-passphrase");
     } catch (err: unknown) {
       const message = getErrorMessage(err, "Invalid credentials");
       toast({

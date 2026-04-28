@@ -57,9 +57,9 @@ export default function RegisterPage() {
       await register({ email, password, name, role });
       toast({
         title: "Account created",
-        description: "You are signed in and ready to use ITMS.",
+        description: "Please set up your passphrase for two-factor security.",
       });
-      router.push("/dashboard");
+      router.push("/verify-passphrase");
     } catch (err: unknown) {
       const message = getErrorMessage(err, "Registration failed");
       toast({
