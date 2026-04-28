@@ -101,6 +101,18 @@ The database is automatically seeded with these accounts on first startup. They 
 | Operator | `operator@itms.com` | `operator123` |
 | Viewer | `viewer@itms.com` | `viewer123` |
 
+### Passphrase (2FA)
+
+After signing in with email and password, a second-factor **passphrase** verification is required. The demo accounts are pre-seeded with the following passphrases:
+
+| Role | Passphrase |
+|------|------------|
+| Admin | `admin-secure-phrase` |
+| Operator | `operator-secure-phrase` |
+| Viewer | `viewer-secure-phrase` |
+
+New users will be prompted to create their own passphrase on first login. Passphrases can be changed from **Settings > Profile > Passphrase (2FA)**.
+
 > **Demo Mode:** If PostgreSQL or the backend server is not running, you can still log in with the credentials above. The dashboard will display pre-populated demo data so the full UI is functional without any infrastructure.
 
 ## API Endpoints

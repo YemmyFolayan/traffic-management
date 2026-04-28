@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { KeyRound, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 import { DEMO_USERS } from "@/lib/demo-data";
@@ -47,6 +47,11 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
+import {
+  hasPassphrase,
+  verifyPassphrase,
+  setPassphrase,
+} from "@/lib/passphrase";
 
 export default function SettingsPage() {
   const user = useAuthStore((s) => s.user);
@@ -68,6 +73,12 @@ export default function SettingsPage() {
 
   const [notifySim, setNotifySim] = useState(true);
   const [compactUi, setCompactUi] = useState(false);
+
+  const [ppCurrent, setPpCurrent] = useState("");
+  const [ppNew, setPpNew] = useState("");
+  const [ppConfirm, setPpConfirm] = useState("");
+  const [savingPassphrase, setSavingPassphrase] = useState(false);
+  const userHasPassphrase = user ? hasPassphrase(user.email) : false;
 
   useEffect(() => {
     setName(user?.name ?? "");
@@ -130,6 +141,53 @@ export default function SettingsPage() {
     setPwCurrent("");
     setPwNew("");
     setPwConfirm("");
+  };
+
+  const submitPassphraseChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    if (ppNew.length < 6) {
+      toast({
+        title: "Passphrase too short",
+        description: "Must be at least 6 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (ppNew !== ppConfirm) {
+      toast({
+        title: "Passphrases do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavingPassphrase(true);
+    try {
+      if (userHasPassphrase) {
+        const valid = await verifyPassphrase(user.email, ppCurrent);
+        if (!valid) {
+          toast({
+            title: "Current passphrase incorrect",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      await setPassphrase(user.email, ppNew);
+      toast({ title: "Passphrase updated" });
+      setPpCurrent("");
+      setPpNew("");
+      setPpConfirm("");
+    } catch {
+      toast({
+        title: "Failed to update passphrase",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingPassphrase(false);
+    }
   };
 
   const updateRole = async (id: string, role: UserRole) => {
@@ -274,6 +332,80 @@ export default function SettingsPage() {
                 </div>
                 <Button type="submit" variant="secondary">
                   Update password
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <KeyRound className="h-5 w-5 text-amber-500" />
+                <div>
+                  <CardTitle>Passphrase (2FA)</CardTitle>
+                  <CardDescription>
+                    {userHasPassphrase
+                      ? "Change your two-factor authentication passphrase."
+                      : "Set up a passphrase for two-factor authentication."}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={(e) => void submitPassphraseChange(e)}
+                className="max-w-lg space-y-4"
+              >
+                {userHasPassphrase && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="pp-cur">Current passphrase</Label>
+                    <Input
+                      id="pp-cur"
+                      type="password"
+                      value={ppCurrent}
+                      onChange={(e) => setPpCurrent(e.target.value)}
+                      autoComplete="off"
+                      required
+                    />
+                  </div>
+                )}
+                <div className="grid gap-2">
+                  <Label htmlFor="pp-new">
+                    {userHasPassphrase ? "New passphrase" : "Passphrase"}
+                  </Label>
+                  <Input
+                    id="pp-new"
+                    type="password"
+                    value={ppNew}
+                    onChange={(e) => setPpNew(e.target.value)}
+                    autoComplete="off"
+                    required
+                    minLength={6}
+                    placeholder="At least 6 characters"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="pp-confirm">Confirm passphrase</Label>
+                  <Input
+                    id="pp-confirm"
+                    type="password"
+                    value={ppConfirm}
+                    onChange={(e) => setPpConfirm(e.target.value)}
+                    autoComplete="off"
+                    required
+                    minLength={6}
+                    placeholder="Re-enter passphrase"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  disabled={savingPassphrase}
+                >
+                  {savingPassphrase
+                    ? "Saving…"
+                    : userHasPassphrase
+                      ? "Update passphrase"
+                      : "Set passphrase"}
                 </Button>
               </form>
             </CardContent>

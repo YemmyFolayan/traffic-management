@@ -4,6 +4,15 @@ import { create } from "zustand";
 import { api } from "@/lib/api";
 import { isDemoMode } from "@/lib/demo-mode";
 import { DEMO_ADMIN, DEMO_USERS } from "@/lib/demo-data";
+import {
+  hasPassphrase,
+  setPassphrase,
+  verifyPassphrase as verifyStoredPassphrase,
+  isSessionVerified,
+  markSessionVerified,
+  clearSessionVerified,
+  initDemoPassphrases,
+} from "@/lib/passphrase";
 import type { RegisterPayload, User } from "@/types";
 import { UserRole } from "@/types";
 
@@ -12,11 +21,16 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   isDemoSession: boolean;
+  isPassphraseVerified: boolean;
+  needsPassphraseSetup: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
   loadUser: () => Promise<void>;
   updateProfile: (data: Partial<Pick<User, "name" | "email">>) => Promise<void>;
+  verifyPassphrase: (passphrase: string) => Promise<boolean>;
+  setupPassphrase: (passphrase: string) => Promise<void>;
+  checkPassphraseStatus: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -24,6 +38,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isLoading: true,
   isDemoSession: false,
+  isPassphraseVerified: false,
+  needsPassphraseSetup: false,
 
   login: async (email, password) => {
     set({ isLoading: true });
@@ -33,11 +49,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(res.error?.message ?? "Login failed");
       }
       api.setTokens(res.entity.tokens);
+      await initDemoPassphrases();
+      const passphraseExists = hasPassphrase(res.entity.user.email);
       set({
         user: res.entity.user,
         isAuthenticated: true,
         isLoading: false,
         isDemoSession: false,
+        isPassphraseVerified: false,
+        needsPassphraseSetup: !passphraseExists,
       });
     } catch (e) {
       const demoAccounts: Record<string, { password: string; user: User }> = {
@@ -58,11 +78,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           localStorage.setItem("itms_demo_email", email);
         }
         api.setTokens({ accessToken: "demo-token", refreshToken: "demo-refresh" });
+        await initDemoPassphrases();
+        const passphraseExists = hasPassphrase(email);
         set({
           user: demo.user,
           isAuthenticated: true,
           isLoading: false,
           isDemoSession: true,
+          isPassphraseVerified: false,
+          needsPassphraseSetup: !passphraseExists,
         });
         return;
       }
@@ -90,6 +114,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isAuthenticated: true,
         isLoading: false,
         isDemoSession: false,
+        isPassphraseVerified: false,
+        needsPassphraseSetup: true,
       });
     } catch (e) {
       if (isDemoMode()) {
@@ -109,6 +135,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           isAuthenticated: true,
           isLoading: false,
           isDemoSession: true,
+          isPassphraseVerified: false,
+          needsPassphraseSetup: true,
         });
         return;
       }
@@ -122,21 +150,46 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.removeItem("itms_demo_email");
     }
     api.clearTokens();
-    set({ user: null, isAuthenticated: false, isDemoSession: false });
+    clearSessionVerified();
+    set({
+      user: null,
+      isAuthenticated: false,
+      isDemoSession: false,
+      isPassphraseVerified: false,
+      needsPassphraseSetup: false,
+    });
   },
 
   loadUser: async () => {
     const token = api.getAccessToken();
     if (!token) {
-      set({ user: null, isAuthenticated: false, isLoading: false, isDemoSession: false });
+      set({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isDemoSession: false,
+        isPassphraseVerified: false,
+        needsPassphraseSetup: false,
+      });
       return;
     }
+
+    const sessionVerified = isSessionVerified();
 
     if (token === "demo-token") {
       const storedEmail =
         typeof window !== "undefined" ? localStorage.getItem("itms_demo_email") : null;
       const demoUser = DEMO_USERS.find((u) => u.email === storedEmail) || DEMO_ADMIN;
-      set({ user: demoUser, isAuthenticated: true, isLoading: false, isDemoSession: true });
+      await initDemoPassphrases();
+      const email = demoUser.email;
+      set({
+        user: demoUser,
+        isAuthenticated: true,
+        isLoading: false,
+        isDemoSession: true,
+        isPassphraseVerified: sessionVerified,
+        needsPassphraseSetup: !hasPassphrase(email),
+      });
       return;
     }
 
@@ -145,18 +198,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const res = await api.getMe();
       if (!res.status || !res.entity) {
         api.clearTokens();
-        set({ user: null, isAuthenticated: false, isLoading: false, isDemoSession: false });
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          isDemoSession: false,
+          isPassphraseVerified: false,
+          needsPassphraseSetup: false,
+        });
         return;
       }
+      const email = res.entity.email;
       set({
         user: res.entity,
         isAuthenticated: true,
         isLoading: false,
         isDemoSession: false,
+        isPassphraseVerified: sessionVerified,
+        needsPassphraseSetup: !hasPassphrase(email),
       });
     } catch {
       api.clearTokens();
-      set({ user: null, isAuthenticated: false, isLoading: false, isDemoSession: false });
+      set({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isDemoSession: false,
+        isPassphraseVerified: false,
+        needsPassphraseSetup: false,
+      });
     }
   },
 
@@ -180,5 +250,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       throw e;
     }
+  },
+
+  verifyPassphrase: async (passphrase: string) => {
+    const user = get().user;
+    if (!user) return false;
+    const valid = await verifyStoredPassphrase(user.email, passphrase);
+    if (valid) {
+      markSessionVerified();
+      set({ isPassphraseVerified: true });
+    }
+    return valid;
+  },
+
+  setupPassphrase: async (passphrase: string) => {
+    const user = get().user;
+    if (!user) return;
+    await setPassphrase(user.email, passphrase);
+    markSessionVerified();
+    set({ isPassphraseVerified: true, needsPassphraseSetup: false });
+  },
+
+  checkPassphraseStatus: () => {
+    const user = get().user;
+    if (!user) return;
+    set({ needsPassphraseSetup: !hasPassphrase(user.email) });
   },
 }));

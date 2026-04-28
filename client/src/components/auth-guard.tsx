@@ -6,13 +6,20 @@ import { useAuthStore } from "@/store/auth-store";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, isPassphraseVerified } = useAuthStore();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
       router.push("/login");
+      return;
     }
-  }, [isAuthenticated, isLoading, router]);
+
+    if (!isPassphraseVerified) {
+      router.push("/verify-passphrase");
+    }
+  }, [isAuthenticated, isLoading, isPassphraseVerified, router]);
 
   if (isLoading) {
     return (
@@ -25,7 +32,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || !isPassphraseVerified) return null;
 
   return <>{children}</>;
 }
